@@ -1,22 +1,22 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+from generate import generate
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from generate import generate
 from typing import Optional, List
-import os
-
 app = FastAPI()
 
-# CORS for production
+# Add CORS middleware if you're testing locally
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, specify your domain
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# Define the shape of your form data
 class ProjectFormData(BaseModel):
     projectName: str
     temp_url: str
@@ -40,42 +40,45 @@ class ProjectFormData(BaseModel):
     include: Optional[str] = ""
     functionality: Optional[List[str]] = []
     functionalityOther: Optional[str] = ""
-    inspo: Optional[List[dict]] = []
+    inspo: Optional[List[dict]] = []  # [{"url": "...", "notes": "..."}]
     postTemplate: Optional[str] = ""
-
 
 @app.get("/")
 def read_root():
+    # return {"Hello": "World"}
     return FileResponse("projectForm.html")
+
+
+@app.get("/items/{item_id}")
+def read_item(item_id: int, q: str | None = None):
+    return {"item_id": item_id, "q": q}
+
 
 @app.get("/template")
 def get_template():
+    app.mount("/ESS", StaticFiles(directory="ESS"), name="ESS")
     return FileResponse("projectSheet.html")
-
-
-@app.get("/health")
-def health_check():
-    return {"status": "healthy"}
 
 
 @app.post("/generate")
 async def formGen(formData: ProjectFormData):
+    """
+    Receives form data and generates a PDF
+    """
     try:
+        # Convert Pydantic model to dict
         data_dict = formData.dict()
+
+        # Generate PDF
         pdf_filename = generate(data_dict)
-        
+
+        # Return the PDF file
         return FileResponse(
             pdf_filename,
-            media_type="application/pdf",
-            filename=f"{formData.projectName}_Brief.pdf"
+            media_type='application/pdf',
+            filename=f"ProjectSheet_{formData.projectName}.pdf",
         )
     except Exception as e:
-        print(f"Error generating PDF: {str(e)}")
         return {"error": str(e)}, 500
-
-
-# For Railway - it needs to know what port to use
-if __name__ == "__main__":
-    import uvicorn
-    port = int(os.environ.get("PORT", 8000))
-    uvicorn.run("main:app", host="0.0.0.0", port=port)
+    data = "test"
+    generate(data)

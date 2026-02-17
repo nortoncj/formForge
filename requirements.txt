@@ -1,4 +1,8 @@
 fastapi
-uvicorn
-Jinja2
+uvicorn[standard]
+jinja2
 weasyprint
+python-multipart
+pydantic
+
+python-3.11
