@@ -1,0 +1,100 @@
+body,
+html {
+  overflow: visible;
+  height: auto;
+}
+.ess {
+  width: 200px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  align-self: center;
+  align-content: center;
+}
+.title {
+  text-align: center;
+}
+.title-text {
+  text-align: center;
+  font-size: 18px;
+}
+.project-container {
+  display: block; /* Change from flex to block */
+  margin: 0 2rem;
+}
+
+.project-auth,
+.project-general,
+.project-links,
+.project-design,
+.project-preferences,
+.project-notes {
+  page-break-inside: avoid;
+  break-inside: avoid; /* Webkit support */
+}
+h1 {
+  font-size: 2.5rem;
+}
+h2 {
+  font-size: 2rem;
+}
+h3 {
+  font-size: 1.75rem;
+}
+h4 {
+  font-size: 1.5rem;
+}
+p {
+  font-size: 1.5rem;
+}
+table {
+  border-collapse: collapse;
+  margin-top: 1rem;
+  border: 2px solid black;
+  font-size: 1rem;
+}
+td {
+  padding: 0.5rem;
+  border: 1px solid black;
+}
+tr {
+  border: 1px solid black;
+}
+td:first-child {
+  font-weight: bold;
+}
+.line-separator {
+  border-top: 2px solid black;
+  margin: 1rem 0;
+  width: 100%;
+}
+.warning,
+.warning-note {
+  color: red;
+  font-weight: bold;
+}
+.highlight {
+  background-color: yellow;
+}
+@media print {
+  body {
+    overflow: visible;
+  }
+
+  /* Prevent awkward breaks */
+  h1,
+  h2,
+  h3 {
+    page-break-after: avoid;
+  }
+
+  /* Force breaks where you want them */
+  .section {
+    page-break-inside: avoid;
+  }
+}
+
+@page {
+  size: A4;
+  margin: 1cm;
+}

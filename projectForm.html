@@ -1,0 +1,2179 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WordPress Project Brief | FormForge</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --brand: #2d5bff;
+        --brand-dark: #1a3acc;
+        --success: #00d9a3;
+        --warning: #ffb020;
+        --error: #ff4757;
+        --info: #5b8dee;
+        --bg-light: #fafbfc;
+        --bg-base: #f4f6f8;
+        --surface-white: #ffffff;
+        --border-light: #e4e7eb;
+        --border-medium: #cbd2d9;
+        --text-primary: #1f2933;
+        --text-secondary: #52606d;
+        --text-tertiary: #7b8794;
+        --text-disabled: #cbd2d9;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", sans-serif;
+        background: var(--bg-base);
+        color: var(--text-primary);
+        line-height: 1.5;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .form-header {
+        text-align: center;
+        margin-bottom: 48px;
+        padding-top: 24px;
+      }
+
+      .form-header h1 {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: var(--text-primary);
+      }
+
+      .form-header p {
+        font-size: 16px;
+        color: var(--text-secondary);
+      }
+
+      .progress-indicator {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 48px;
+        position: relative;
+      }
+
+      .progress-indicator::before {
+        content: "";
+        position: absolute;
+        top: 16px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--border-light);
+        z-index: 0;
+      }
+
+      .progress-line {
+        position: absolute;
+        top: 16px;
+        left: 0;
+        height: 2px;
+        background: var(--brand);
+        z-index: 1;
+        transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .progress-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        z-index: 2;
+        flex: 1;
+        cursor: pointer;
+      }
+
+      .progress-step-circle {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--surface-white);
+        border: 2px solid var(--border-medium);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-tertiary);
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        margin-bottom: 8px;
+      }
+
+      .progress-step.active .progress-step-circle {
+        background: var(--brand);
+        border-color: var(--brand);
+        color: white;
+      }
+
+      .progress-step.completed .progress-step-circle {
+        background: var(--success);
+        border-color: var(--success);
+        color: white;
+      }
+
+      .progress-step-label {
+        font-size: 12px;
+        color: var(--text-tertiary);
+        text-align: center;
+        max-width: 100px;
+      }
+
+      .progress-step.active .progress-step-label {
+        color: var(--brand);
+        font-weight: 500;
+      }
+
+      .form-section {
+        background: var(--surface-white);
+        border: 1px solid var(--border-light);
+        border-radius: 12px;
+        padding: 32px;
+        margin-bottom: 24px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        display: none;
+      }
+
+      .form-section.active {
+        display: block;
+        animation: fadeIn 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .section-header {
+        margin-bottom: 32px;
+      }
+
+      .section-header h2 {
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--text-primary);
+      }
+
+      .section-header p {
+        font-size: 16px;
+        color: var(--text-secondary);
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 24px;
+      }
+
+      .form-field {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 0;
+      }
+
+      .form-field.span-12 {
+        grid-column: span 12;
+      }
+
+      .form-field.span-6 {
+        grid-column: span 6;
+      }
+
+      @media (max-width: 768px) {
+        .form-field.span-6 {
+          grid-column: span 12;
+        }
+      }
+
+      label {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-primary);
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+      }
+
+      label .required {
+        color: var(--error);
+        margin-left: 4px;
+      }
+
+      input[type="text"],
+      input[type="password"],
+      input[type="tel"],
+      input[type="url"],
+      textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid var(--border-medium);
+        border-radius: 8px;
+        font-size: 16px;
+        color: var(--text-primary);
+        background: var(--surface-white);
+        transition: all 0.15s ease;
+        font-family: inherit;
+      }
+
+      input:focus,
+      textarea:focus {
+        outline: none;
+        border-color: var(--brand);
+        box-shadow: 0 0 0 3px rgba(45, 91, 255, 0.1);
+      }
+
+      input.error,
+      textarea.error {
+        border-color: var(--error);
+      }
+
+      input.error:focus,
+      textarea.error:focus {
+        box-shadow: 0 0 0 3px rgba(255, 71, 87, 0.1);
+      }
+
+      textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+
+      .helper-text {
+        font-size: 14px;
+        color: var(--text-tertiary);
+        margin-top: 4px;
+      }
+
+      .error-message {
+        font-size: 14px;
+        color: var(--error);
+        margin-top: 4px;
+        display: none;
+      }
+
+      .error-message.show {
+        display: block;
+      }
+
+      .password-wrapper {
+        position: relative;
+      }
+
+      .password-toggle {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: var(--text-tertiary);
+        cursor: pointer;
+        padding: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .password-toggle:hover {
+        color: var(--text-secondary);
+      }
+
+      .checkbox-group {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .checkbox-item {
+        display: flex;
+        align-items: flex-start;
+        padding: 12px;
+        border: 1px solid var(--border-light);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+
+      .checkbox-item:hover {
+        border-color: var(--border-medium);
+        background: var(--bg-light);
+      }
+
+      .checkbox-item input[type="checkbox"] {
+        margin-right: 12px;
+        margin-top: 2px;
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+      }
+
+      .checkbox-content {
+        flex: 1;
+      }
+
+      .checkbox-label {
+        font-weight: 500;
+        color: var(--text-primary);
+        display: block;
+        margin-bottom: 2px;
+      }
+
+      .checkbox-description {
+        font-size: 14px;
+        color: var(--text-secondary);
+      }
+
+      .other-input {
+        margin-top: 12px;
+        display: none;
+      }
+
+      .other-input.show {
+        display: block;
+      }
+
+      .repeater-field {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .repeater-item {
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+        gap: 12px;
+        padding: 16px;
+        border: 1px solid var(--border-light);
+        border-radius: 8px;
+        background: var(--bg-light);
+      }
+
+      .repeater-item input {
+        background: var(--surface-white);
+      }
+
+      .repeater-remove {
+        background: none;
+        border: none;
+        color: var(--error);
+        cursor: pointer;
+        padding: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        transition: all 0.15s ease;
+      }
+
+      .repeater-remove:hover {
+        background: rgba(255, 71, 87, 0.1);
+      }
+
+      .repeater-add {
+        background: none;
+        border: 1px dashed var(--border-medium);
+        color: var(--brand);
+        padding: 12px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.15s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .repeater-add:hover {
+        border-color: var(--brand);
+        background: rgba(45, 91, 255, 0.05);
+      }
+
+      .color-input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .color-input-item {
+        display: grid;
+        grid-template-columns: 60px 1fr auto;
+        gap: 12px;
+        align-items: center;
+      }
+
+      input[type="color"] {
+        width: 60px;
+        height: 40px;
+        border: 1px solid var(--border-medium);
+        border-radius: 8px;
+        cursor: pointer;
+        padding: 4px;
+      }
+
+      .form-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 32px;
+        padding-top: 24px;
+        border-top: 1px solid var(--border-light);
+      }
+
+      button {
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: none;
+        font-family: inherit;
+      }
+
+      .btn-primary {
+        background: var(--brand);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: var(--brand-dark);
+      }
+
+      .btn-secondary {
+        background: transparent;
+        color: var(--brand);
+        border: 1px solid var(--border-medium);
+      }
+
+      .btn-secondary:hover {
+        background: var(--bg-light);
+      }
+
+      .btn-ghost {
+        background: transparent;
+        color: var(--text-secondary);
+      }
+
+      .btn-ghost:hover {
+        background: var(--bg-light);
+      }
+
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .auto-save-indicator {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 12px 16px;
+        background: var(--surface-white);
+        border: 1px solid var(--border-light);
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        font-size: 14px;
+        color: var(--text-secondary);
+        display: none;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .auto-save-indicator.show {
+        display: flex;
+        animation: slideIn 0.25s ease;
+      }
+
+      @keyframes slideIn {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      .save-icon {
+        width: 16px;
+        height: 16px;
+      }
+
+      .success-screen {
+        display: none;
+        text-align: center;
+        padding: 48px 32px;
+      }
+
+      .success-screen.show {
+        display: block;
+        animation: fadeIn 0.35s ease;
+      }
+
+      .success-icon {
+        width: 64px;
+        height: 64px;
+        background: var(--success);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px;
+      }
+
+      .success-icon svg {
+        width: 32px;
+        height: 32px;
+        stroke: white;
+      }
+
+      .success-screen h2 {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 12px;
+      }
+
+      .success-screen p {
+        font-size: 16px;
+        color: var(--text-secondary);
+        margin-bottom: 32px;
+      }
+
+      .success-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        max-width: 400px;
+        margin: 0 auto;
+      }
+
+      .success-actions button {
+        width: 100%;
+        justify-content: center;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 0;
+        }
+
+        .form-header {
+          margin-bottom: 32px;
+        }
+
+        .form-header h1 {
+          font-size: 24px;
+        }
+
+        .progress-indicator {
+          overflow-x: auto;
+          padding-bottom: 12px;
+        }
+
+        .progress-step-label {
+          font-size: 10px;
+          max-width: 60px;
+        }
+
+        .form-section {
+          padding: 24px 16px;
+        }
+
+        .section-header h2 {
+          font-size: 20px;
+        }
+
+        .repeater-item {
+          grid-template-columns: 1fr;
+        }
+
+        .auto-save-indicator {
+          top: 10px;
+          right: 10px;
+          font-size: 12px;
+          padding: 8px 12px;
+        }
+      }
+
+      .tooltip {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        margin-left: 6px;
+        cursor: help;
+      }
+
+      .tooltip-icon {
+        width: 16px;
+        height: 16px;
+        color: var(--text-tertiary);
+      }
+
+      .tooltip-text {
+        visibility: hidden;
+        width: 250px;
+        background-color: var(--text-primary);
+        color: white;
+        text-align: left;
+        border-radius: 8px;
+        padding: 12px;
+        position: absolute;
+        z-index: 1000;
+        bottom: 125%;
+        left: 50%;
+        margin-left: -125px;
+        opacity: 0;
+        transition: opacity 0.25s ease;
+        font-size: 13px;
+        font-weight: 400;
+        line-height: 1.4;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      .tooltip-text::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: var(--text-primary) transparent transparent transparent;
+      }
+
+      .tooltip:hover .tooltip-text {
+        visibility: visible;
+        opacity: 1;
+      }
+
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .animate-spin {
+        animation: spin 1s linear infinite;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="form-header">
+        <h1>WordPress Project Brief</h1>
+        <p>Tell us about your website project so we can build something rad</p>
+      </div>
+
+      <div class="progress-indicator">
+        <div class="progress-line" id="progressLine"></div>
+        <div class="progress-step active" data-step="0">
+          <div class="progress-step-circle">1</div>
+          <div class="progress-step-label">Basics</div>
+        </div>
+        <div class="progress-step" data-step="1">
+          <div class="progress-step-circle">2</div>
+          <div class="progress-step-label">Business Info</div>
+        </div>
+        <div class="progress-step" data-step="2">
+          <div class="progress-step-circle">3</div>
+          <div class="progress-step-label">Online Presence</div>
+        </div>
+        <div class="progress-step" data-step="3">
+          <div class="progress-step-circle">4</div>
+          <div class="progress-step-label">Brand & Design</div>
+        </div>
+        <div class="progress-step" data-step="4">
+          <div class="progress-step-circle">5</div>
+          <div class="progress-step-label">Content</div>
+        </div>
+        <div class="progress-step" data-step="5">
+          <div class="progress-step-circle">6</div>
+          <div class="progress-step-label">Features</div>
+        </div>
+      </div>
+
+      <form id="projectForm">
+        <!-- Section 1: Project Basics -->
+        <div class="form-section active" data-section="0">
+          <div class="section-header">
+            <h2>Project Basics</h2>
+            <p>Let's start with the fundamentals</p>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-field span-12">
+              <label for="projectName">
+                Project Name
+                <span class="required">*</span>
+              </label>
+              <input
+                type="text"
+                id="projectName"
+                name="projectName"
+                placeholder="e.g., Acme Plumbing Website Redesign"
+                required
+                data-validate="minLength:3"
+              />
+              <span class="helper-text">Internal name for this project</span>
+              <span class="error-message"
+                >Project name needs at least 3 characters</span
+              >
+            </div>
+
+            <div class="form-field span-6">
+              <label for="temp_url">
+                Site URL
+                <span class="required">*</span>
+                <span class="tooltip">
+                  <svg
+                    class="tooltip-icon"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    ></path>
+                  </svg>
+                  <span class="tooltip-text"
+                    >This is where we'll build the site before going live. Can
+                    be a subdomain or the final domain.</span
+                  >
+                </span>
+              </label>
+              <input
+                type="text"
+                id="temp_url"
+                name="temp_url"
+                placeholder="staging.yoursite.com or newdomain.com"
+                required
+                data-validate="url"
+              />
+              <span class="helper-text"
+                >Temp staging URL or new domain name</span
+              >
+              <span class="error-message">Please enter a valid URL</span>
+            </div>
+
+            <div class="form-field span-6">
+              <label for="websiteUrl">Current Website</label>
+              <input
+                type="text"
+                id="websiteUrl"
+                name="websiteUrl"
+                placeholder="https://currentsite.com"
+                data-validate="url-optional"
+              />
+              <span class="helper-text"
+                >Leave blank if this is a brand new site</span
+              >
+              <span class="error-message">Please enter a valid URL</span>
+            </div>
+
+            <div class="form-field span-6">
+              <label for="username">
+                WP Admin Username
+                <span class="required">*</span>
+              </label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                default="temp"
+                placeholder="admin_username"
+                required
+                data-validate="username"
+              />
+              <span class="error-message">Please Enter username</span>
+            </div>
+
+            <div class="form-field span-6">
+              <label for="password">
+                WP Admin Password
+                <span class="required">*</span>
+              </label>
+              <div class="password-wrapper">
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="••••••••••"
+                  required
+                  data-validate="minLength:4"
+                />
+                <button
+                  type="button"
+                  class="password-toggle"
+                  onclick="togglePassword()"
+                >
+                  <svg
+                    width="20"
+                    height="20"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    ></path>
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    ></path>
+                  </svg>
+                </button>
+              </div>
+              <span class="helper-text"
+                >Use a strong password with special characters</span
+              >
+              <span class="error-message"
+                >Password needs at least 8 characters</span
+              >
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-ghost" disabled>
+              <svg
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 19l-7-7 7-7"
+                ></path>
+              </svg>
+              Back
+            </button>
+            <button type="button" class="btn-primary" onclick="nextSection()">
+              Continue
+              <svg
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
+                ></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Section 2: Business Information -->
+        <div class="form-section" data-section="1">
+          <div class="section-header">
+            <h2>Business Information</h2>
+            <p>Details that'll show up on the site</p>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-field span-12">
+              <label for="siteAddress">
+                Business Address
+                <span class="required">*</span>
+              </label>
+              <textarea
+                id="siteAddress"
+                name="siteAddress"
+                rows="3"
+                placeholder="123 Main Street&#10;Suite 100&#10;Your City, ST 12345"
+                required
+              ></textarea>
+              <span class="helper-text"
+                >Full address as it should appear on the site</span
+              >
+              <span class="error-message">Business address is required</span>
+            </div>
+
+            <div class="form-field span-6">
+              <label for="sitePhone">
+                Phone Number
+                <span class="required">*</span>
+              </label>
+              <input
+                type="tel"
+                id="sitePhone"
+                name="sitePhone"
+                placeholder="(555) 123-4567"
+                required
+              />
+              <span class="helper-text"
+                >Primary contact number for the site</span
+              >
+              <span class="error-message">Phone number is required</span>
+            </div>
+
+            <div class="form-field span-6">
+              <label for="serviceArea">
+                Service Areas
+                <span class="required">*</span>
+                <span class="tooltip">
+                  <svg
+                    class="tooltip-icon"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    ></path>
+                  </svg>
+                  <span class="tooltip-text"
+                    >List all cities, counties, or regions you serve. This helps
+                    with local SEO.</span
+                  >
+                </span>
+              </label>
+              <textarea
+                id="serviceArea"
+                name="serviceArea"
+                rows="3"
+                placeholder="San Francisco, Oakland, Berkeley, Marin County..."
+                required
+              ></textarea>
+              <span class="helper-text"
+                >Cities, regions, or areas you serve (separate with
+                commas)</span
+              >
+              <span class="error-message">Service areas are required</span>
+            </div>
+
+            <div class="form-field span-12">
+              <label for="hours">
+                Hours of Operation
+                <span class="required">*</span>
+              </label>
+              <textarea
+                id="hours"
+                name="hours"
+                rows="4"
+                placeholder="Mon-Fri: 9am - 6pm&#10;Sat: 10am - 4pm&#10;Sun: Closed"
+                required
+              ></textarea>
+              <span class="helper-text"
+                >Business hours to display on the site</span
+              >
+              <span class="error-message">Hours of operation are required</span>
+            </div>
+
+            <div class="form-field span-12">
+              <label for="formInfo">
+                Contact Form Fields
+                <span class="required">*</span>
+              </label>
+              <textarea
+                id="formInfo"
+                name="formInfo"
+                rows="3"
+                default="Name, Email, Phone, Confirm Phone, Message"
+                placeholder="Name, Email, Phone, Service Needed, Preferred Contact Method, Message"
+                required
+              ></textarea>
+              <span class="helper-text"
+                >What fields should the contact form include?</span
+              >
+              <span class="error-message"
+                >Contact form fields are required</span
+              >
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" onclick="prevSection()">
+              <svg
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 19l-7-7 7-7"
+                ></path>
+              </svg>
+              Back
+            </button>
+            <button type="button" class="btn-primary" onclick="nextSection()">
+              Continue
+              <svg
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
+                ></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Section 3: Online Presence -->
+        <div class="form-section" data-section="2">
+          <div class="section-header">
+            <h2>Online Presence</h2>
+            <p>Connect your existing profiles</p>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-field span-12">
+              <label for="gmb">Google Business Profile</label>
+              <input
+                type="text"
+                id="gmb"
+                name="gmb"
+                placeholder="https://maps.app.goo.gl/..."
+                data-validate="url-optional"
+              />
+            </div>
+
+            <div class="form-field span-6">
+              <label for="fb">Facebook Page</label>
+              <input
+                type="text"
+                id="fb"
+                name="fb"
+                placeholder="https://facebook.com/yourpage"
+                data-validate="url-optional"
+              />
+            </div>
+
+            <div class="form-field span-6">
+              <label for="county">County Advisory Article</label>
+              <input
+                type="text"
+                id="county"
+                name="county"
+                placeholder="https://example.com/county-article"
+                data-validate="url-optional"
+              />
+              <span class="helper-text"
+                >Link to any county-specific content or articles</span
+              >
+            </div>
+
+            <div class="form-field span-12">
+              <label for="other">Additional Links or Info</label>
+              <textarea
+                id="other"
+                name="other"
+                rows="4"
+                placeholder="Instagram: @yourhandle&#10;Yelp: https://yelp.com/...&#10;Anything else we should know..."
+              ></textarea>
+              <span class="helper-text"
+                >Any other profiles, links, or important details</span
+              >
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" onclick="prevSection()">
+              <svg
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 19l-7-7 7-7"
+                ></path>
+              </svg>
+              Back
+            </button>
+            <button type="button" class="btn-primary" onclick="nextSection()">
+              Continue
+              <svg
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
+                ></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Section 4: Brand & Design -->
+        <div class="form-section" data-section="3">
+          <div class="section-header">
+            <h2>Brand & Design</h2>
+            <p>Visual identity and assets</p>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-field span-12">
+              <label for="colors">
+                Brand Colors
+                <span class="required">*</span>
+                <span class="tooltip">
+                  <svg
+                    class="tooltip-icon"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    ></path>
+                  </svg>
+                  <span class="tooltip-text"
+                    >Include hex codes if you have them. No brand guide? We can
+                    help pick colors.</span
+                  >
+                </span>
+              </label>
+              <textarea
+                id="colors"
+                name="colors"
+                rows="4"
+                placeholder="Primary: #2D5BFF (Electric Blue)&#10;Secondary: #00D9A3 (Mint Green)&#10;Accent: #FFB020 (Amber)"
+                required
+              ></textarea>
+              <span class="helper-text"
+                >Primary, secondary, and accent colors with hex codes</span
+              >
+              <span class="error-message">Brand colors are required</span>
+            </div>
+
+            <div class="form-field span-12">
+              <label for="logo">
+                Company Logo
+                <span class="required">*</span>
+              </label>
+              <input
+                type="text"
+                id="logo"
+                name="logo"
+                placeholder="https://drive.google.com/... or upload file"
+                required
+              />
+              <span class="helper-text"
+                >Link to logo file or upload directly (vector preferred)</span
+              >
+              <span class="error-message">Company logo is required</span>
+            </div>
+
+            <div class="form-field span-12">
+              <label for="images">Additional Images</label>
+              <input
+                type="text"
+                id="images"
+                name="images"
+                placeholder="https://drive.google.com/folder/... or upload files"
+              />
+              <span class="helper-text"
+                >Photos, graphics, team headshots, product images, etc.</span
+              >
+            </div>
+
+            <div class="form-field span-12">
+              <label for="specials">Promotions & Specials</label>
+              <textarea
+                id="specials"
+                name="specials"
+                rows="4"
+                placeholder="20% off first service for new customers&#10;Free consultation through March..."
+              ></textarea>
+              <span class="helper-text"
+                >Current deals, discounts, or promotional offers to
+                highlight</span
+              >
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" onclick="prevSection()">
+              <svg
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 19l-7-7 7-7"
+                ></path>
+              </svg>
+              Back
+            </button>
+            <button type="button" class="btn-primary" onclick="nextSection()">
+              Continue
+              <svg
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
+                ></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Section 5: Content Migration -->
+        <div class="form-section" data-section="4">
+          <div class="section-header">
+            <h2>Content Migration</h2>
+            <p>What to keep, what to ditch</p>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-field span-6">
+              <label for="include">Keep This Stuff</label>
+              <textarea
+                id="include"
+                name="include"
+                rows="6"
+                placeholder="All service pages&#10;Testimonials section&#10;Blog posts from 2023-2024&#10;About Us page content..."
+              ></textarea>
+              <span class="helper-text"
+                >Content, pages, or features you want on the new site</span
+              >
+            </div>
+
+            <div class="form-field span-6">
+              <label for="exclude">
+                Ditch This Stuff
+                <span class="tooltip">
+                  <svg
+                    class="tooltip-icon"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    ></path>
+                  </svg>
+                  <span class="tooltip-text"
+                    >Be specific! This prevents us from migrating content you
+                    don't want.</span
+                  >
+                </span>
+              </label>
+              <textarea
+                id="exclude"
+                name="exclude"
+                rows="6"
+                placeholder="Old pricing from 2020&#10;Outdated team bios&#10;Old blog posts before 2023&#10;That weird popup..."
+              ></textarea>
+              <span class="helper-text"
+                >Content or features to leave behind</span
+              >
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" onclick="prevSection()">
+              <svg
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 19l-7-7 7-7"
+                ></path>
+              </svg>
+              Back
+            </button>
+            <button type="button" class="btn-primary" onclick="nextSection()">
+              Continue
+              <svg
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
+                ></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Section 6: Features & Functionality -->
+        <div class="form-section" data-section="5">
+          <div class="section-header">
+            <h2>Features & Functionality</h2>
+            <p>Special features and inspiration</p>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-field span-12">
+              <label>Special Features Needed</label>
+              <div class="checkbox-group">
+                <label class="checkbox-item">
+                  <input
+                    type="checkbox"
+                    name="functionality[]"
+                    value="chatbot"
+                  />
+                  <div class="checkbox-content">
+                    <span class="checkbox-label">Live Chat / Chatbot</span>
+                    <span class="checkbox-description"
+                      >Customer support chat widget</span
+                    >
+                  </div>
+                </label>
+                <label class="checkbox-item">
+                  <input type="checkbox" name="functionality[]" value="shop" />
+                  <div class="checkbox-content">
+                    <span class="checkbox-label">Online Store</span>
+                    <span class="checkbox-description"
+                      >Basic eCommerce functionality</span
+                    >
+                  </div>
+                </label>
+                <label class="checkbox-item">
+                  <input
+                    type="checkbox"
+                    name="functionality[]"
+                    value="woocommerce"
+                  />
+                  <div class="checkbox-content">
+                    <span class="checkbox-label">WooCommerce</span>
+                    <span class="checkbox-description"
+                      >Full-featured eCommerce platform</span
+                    >
+                  </div>
+                </label>
+                <label class="checkbox-item">
+                  <input
+                    type="checkbox"
+                    name="functionality[]"
+                    value="booking"
+                  />
+                  <div class="checkbox-content">
+                    <span class="checkbox-label">Appointment Booking</span>
+                    <span class="checkbox-description"
+                      >Calendar/scheduling system</span
+                    >
+                  </div>
+                </label>
+                <label class="checkbox-item">
+                  <input
+                    type="checkbox"
+                    name="functionality[]"
+                    value="membership"
+                  />
+                  <div class="checkbox-content">
+                    <span class="checkbox-label">Member Portal</span>
+                    <span class="checkbox-description"
+                      >Protected content areas</span
+                    >
+                  </div>
+                </label>
+                <label class="checkbox-item">
+                  <input
+                    type="checkbox"
+                    name="functionality[]"
+                    value="multilingual"
+                  />
+                  <div class="checkbox-content">
+                    <span class="checkbox-label">Multiple Languages</span>
+                    <span class="checkbox-description"
+                      >Translation functionality</span
+                    >
+                  </div>
+                </label>
+                <label class="checkbox-item">
+                  <input
+                    type="checkbox"
+                    name="functionality[]"
+                    value="other"
+                    id="functionalityOther"
+                  />
+                  <div class="checkbox-content">
+                    <span class="checkbox-label">Other (specify below)</span>
+                  </div>
+                </label>
+              </div>
+              <div class="other-input" id="functionalityOtherInput">
+                <textarea
+                  name="functionalityOther"
+                  rows="3"
+                  placeholder="Describe any custom features..."
+                ></textarea>
+              </div>
+            </div>
+
+            <div class="form-field span-12">
+              <label for="postTemplate">Blog Post Template</label>
+              <textarea
+                id="postTemplate"
+                name="postTemplate"
+                rows="5"
+                default="Create a Post Template that has relevant information about the business with at least 5 pictures. There must also be a side Widget that contains the Logo, Phone Number, and contact form. Also try to add another picture on the side widget. Do not use the theme builder for the template just make one post template in the Posts. "
+                placeholder="Author bio at bottom&#10;Related posts section&#10;Social share buttons&#10;Estimated read time&#10;Table of contents for long posts..."
+              ></textarea>
+              <span class="helper-text"
+                >What should be included in blog post layouts?</span
+              >
+            </div>
+
+            <div class="form-field span-12">
+              <label>
+                Design Inspiration
+                <span class="tooltip">
+                  <svg
+                    class="tooltip-icon"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    ></path>
+                  </svg>
+                  <span class="tooltip-text"
+                    >Websites you like and what catches your eye about
+                    them</span
+                  >
+                </span>
+              </label>
+              <div class="repeater-field" id="inspoRepeater">
+                <div class="repeater-item">
+                  <input
+                    type="text"
+                    name="inspoUrl[]"
+                    placeholder="https://example.com"
+                  />
+                  <input
+                    type="text"
+                    name="inspoNotes[]"
+                    placeholder="What you like about it"
+                  />
+                  <button
+                    type="button"
+                    class="repeater-remove"
+                    onclick="removeRepeaterItem(this)"
+                  >
+                    <svg
+                      width="20"
+                      height="20"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      ></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <button
+                type="button"
+                class="repeater-add"
+                onclick="addInspoItem()"
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 4v16m8-8H4"
+                  ></path>
+                </svg>
+                Add Another Example
+              </button>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" onclick="prevSection()">
+              <svg
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 19l-7-7 7-7"
+                ></path>
+              </svg>
+              Back
+            </button>
+            <button type="submit" class="btn-primary">
+              Generate PDF
+              <svg
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                ></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Success Screen -->
+        <div class="success-screen" id="successScreen">
+          <div class="success-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="3"
+                d="M5 13l4 4L19 7"
+              ></path>
+            </svg>
+          </div>
+          <h2>Project brief locked in</h2>
+          <p>
+            Your WordPress project details have been saved. We'll generate your
+            PDF brief and kick things off.
+          </p>
+          <div class="success-actions">
+            <button class="btn-primary" onclick="downloadPDF()">
+              <svg
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                ></path>
+              </svg>
+              Download PDF Brief
+            </button>
+            <button class="btn-secondary" onclick="editForm()">
+              <svg
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                ></path>
+              </svg>
+              Edit Details
+            </button>
+            <button class="btn-ghost" onclick="resetForm()">
+              <svg
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 4v16m8-8H4"
+                ></path>
+              </svg>
+              Start Another Project
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <!-- Auto-save Indicator -->
+      <div class="auto-save-indicator" id="autoSaveIndicator">
+        <svg
+          class="save-icon"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M5 13l4 4L19 7"
+          ></path>
+        </svg>
+        <span id="autoSaveText">Saved</span>
+      </div>
+    </div>
+
+    <script>
+      let currentSection = 0;
+      const totalSections = 6;
+      let formData = {};
+      let autoSaveTimer;
+
+      // Initialize
+      document.addEventListener("DOMContentLoaded", function () {
+        loadFormData();
+        updateProgress();
+        setupEventListeners();
+
+        // Show/hide "other" input for functionality
+        document
+          .getElementById("functionalityOther")
+          .addEventListener("change", function () {
+            const otherInput = document.getElementById(
+              "functionalityOtherInput",
+            );
+            if (this.checked) {
+              otherInput.classList.add("show");
+            } else {
+              otherInput.classList.remove("show");
+            }
+          });
+      });
+
+      function setupEventListeners() {
+        // Auto-save on input
+        const inputs = document.querySelectorAll("input, textarea, select");
+        inputs.forEach((input) => {
+          input.addEventListener("input", function () {
+            clearTimeout(autoSaveTimer);
+            autoSaveTimer = setTimeout(() => {
+              saveFormData();
+              showAutoSaveIndicator();
+            }, 1000);
+          });
+
+          // Validation on blur
+          input.addEventListener("blur", function () {
+            validateField(this);
+          });
+        });
+
+        // Progress step click navigation
+        document.querySelectorAll(".progress-step").forEach((step) => {
+          step.addEventListener("click", function () {
+            const targetSection = parseInt(this.dataset.step);
+            if (targetSection < currentSection || validateCurrentSection()) {
+              goToSection(targetSection);
+            }
+          });
+        });
+      }
+
+      function nextSection() {
+        if (validateCurrentSection()) {
+          if (currentSection < totalSections - 1) {
+            currentSection++;
+            updateSections();
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }
+        }
+      }
+
+      function prevSection() {
+        if (currentSection > 0) {
+          currentSection--;
+          updateSections();
+          updateProgress();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      }
+
+      function goToSection(sectionIndex) {
+        currentSection = sectionIndex;
+        updateSections();
+        updateProgress();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function updateSections() {
+        const sections = document.querySelectorAll(".form-section");
+        sections.forEach((section, index) => {
+          if (index === currentSection) {
+            section.classList.add("active");
+          } else {
+            section.classList.remove("active");
+          }
+        });
+      }
+
+      function updateProgress() {
+        // Update progress line
+        const progressLine = document.getElementById("progressLine");
+        const progressPercent = (currentSection / (totalSections - 1)) * 100;
+        progressLine.style.width = progressPercent + "%";
+
+        // Update step indicators
+        const steps = document.querySelectorAll(".progress-step");
+        steps.forEach((step, index) => {
+          step.classList.remove("active", "completed");
+          if (index === currentSection) {
+            step.classList.add("active");
+          } else if (index < currentSection) {
+            step.classList.add("completed");
+            step.querySelector(".progress-step-circle").innerHTML = "✓";
+          } else {
+            step.querySelector(".progress-step-circle").innerHTML = index + 1;
+          }
+        });
+      }
+
+      function validateCurrentSection() {
+        const currentSectionEl = document.querySelector(
+          `.form-section[data-section="${currentSection}"]`,
+        );
+        const requiredFields = currentSectionEl.querySelectorAll("[required]");
+        let isValid = true;
+
+        requiredFields.forEach((field) => {
+          if (!validateField(field)) {
+            isValid = false;
+          }
+        });
+
+        return isValid;
+      }
+
+      function validateField(field) {
+        const value = field.value.trim();
+        const validation = field.dataset.validate;
+        let isValid = true;
+        let errorMessage = "";
+
+        // Required check
+        if (field.hasAttribute("required") && !value) {
+          isValid = false;
+          errorMessage = "This field can't be empty";
+        }
+
+        // Validation patterns
+        if (value && validation) {
+          if (validation.includes("minLength")) {
+            const minLength = parseInt(validation.split(":")[1]);
+            if (value.length < minLength) {
+              isValid = false;
+              errorMessage = `Needs at least ${minLength} characters`;
+            }
+          }
+
+          if (validation === "url" || validation === "url-optional") {
+            const urlPattern =
+              /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/;
+            if (validation === "url" && !urlPattern.test(value)) {
+              isValid = false;
+              errorMessage =
+                "Please enter a valid URL (starting with http:// or https://)";
+            }
+            if (
+              validation === "url-optional" &&
+              value &&
+              !urlPattern.test(value)
+            ) {
+              isValid = false;
+              errorMessage =
+                "Please enter a valid URL (starting with http:// or https://)";
+            }
+          }
+        }
+
+        // Update UI
+        const errorEl = field.parentElement.querySelector(".error-message");
+        if (!isValid) {
+          field.classList.add("error");
+          if (errorEl) {
+            errorEl.textContent = errorMessage;
+            errorEl.classList.add("show");
+          }
+        } else {
+          field.classList.remove("error");
+          if (errorEl) {
+            errorEl.classList.remove("show");
+          }
+        }
+
+        return isValid;
+      }
+
+      function togglePassword() {
+        const passwordField = document.getElementById("password");
+        if (passwordField.type === "password") {
+          passwordField.type = "text";
+        } else {
+          passwordField.type = "password";
+        }
+      }
+
+      function addInspoItem() {
+        const repeater = document.getElementById("inspoRepeater");
+        const newItem = document.createElement("div");
+        newItem.className = "repeater-item";
+        newItem.innerHTML = `
+                      <input type="text" name="inspoUrl[]" placeholder="https://example.com">
+                      <input type="text" name="inspoNotes[]" placeholder="What you like about it">
+                      <button type="button" class="repeater-remove" onclick="removeRepeaterItem(this)">
+                          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                          </svg>
+                      </button>
+                  `;
+        repeater.appendChild(newItem);
+      }
+
+      function removeRepeaterItem(button) {
+        const item = button.closest(".repeater-item");
+        const repeater = item.parentElement;
+        if (repeater.children.length > 1) {
+          item.remove();
+        } else {
+          // Clear inputs if it's the last item
+          const inputs = item.querySelectorAll("input");
+          inputs.forEach((input) => (input.value = ""));
+        }
+      }
+
+      function saveFormData() {
+        const form = document.getElementById("projectForm");
+        const formElements = form.elements;
+
+        for (let element of formElements) {
+          if (element.name) {
+            if (element.type === "checkbox") {
+              if (!formData[element.name]) {
+                formData[element.name] = [];
+              }
+              if (element.checked) {
+                if (!formData[element.name].includes(element.value)) {
+                  formData[element.name].push(element.value);
+                }
+              }
+            } else if (element.name.includes("[]")) {
+              const baseName = element.name.replace("[]", "");
+              if (!formData[baseName]) {
+                formData[baseName] = [];
+              }
+              formData[baseName].push(element.value);
+            } else {
+              formData[element.name] = element.value;
+            }
+          }
+        }
+
+        localStorage.setItem("wpProjectFormData", JSON.stringify(formData));
+      }
+
+      function loadFormData() {
+        const saved = localStorage.getItem("wpProjectFormData");
+        if (saved) {
+          formData = JSON.parse(saved);
+
+          // Populate form fields
+          Object.keys(formData).forEach((key) => {
+            const element = document.querySelector(`[name="${key}"]`);
+            if (element) {
+              if (element.type === "checkbox") {
+                const checkboxes = document.querySelectorAll(`[name="${key}"]`);
+                checkboxes.forEach((checkbox) => {
+                  if (formData[key].includes(checkbox.value)) {
+                    checkbox.checked = true;
+                  }
+                });
+              } else {
+                element.value = formData[key];
+              }
+            }
+          });
+        }
+      }
+
+      function showAutoSaveIndicator() {
+        const indicator = document.getElementById("autoSaveIndicator");
+        indicator.classList.add("show");
+
+        setTimeout(() => {
+          indicator.classList.remove("show");
+        }, 2000);
+      }
+
+      // Form submission
+      document
+        .getElementById("projectForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          if (validateCurrentSection()) {
+            saveFormData();
+
+            // Prepare the data for submission
+            const submitData = prepareFormDataForSubmission();
+
+            try {
+              // show loading state
+              const submitBtn = document.querySelector('button[type="submit"]');
+              const originalBtnContent = submitBtn.innerHTML;
+              submitBtn.disabled = true;
+              submitBtn.innerHTML = `
+                  <svg class="animate-spin" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" stroke-opacity="0.25"></circle>
+                          <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" opacity="0.75"></path>
+                      </svg>
+                      Generating PDF...
+                  `;
+
+              // Submit to backend
+              const response = await fetch("/generate", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(submitData),
+              });
+
+              if (!response.ok) {
+                throw new Error("PDF generation failed");
+              }
+
+              // Get PDF blob
+              const blob = await response.blob();
+
+              // Store blob for download
+              window.generatedPDFBlob = blob;
+              window.generatedPDFFilename = `ProjectSheet_${submitData.projectName || "project"}.pdf`;
+
+              // Reset button
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = originalBtnContent;
+
+              // Hide all form sections
+              document.querySelectorAll(".form-section").forEach((section) => {
+                section.classList.remove("active");
+              });
+
+              // Show success screen
+              document.getElementById("successScreen").classList.add("show");
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            } catch (error) {
+              console.error("Error:", error);
+              alert(
+                "Sorry, there was an error generating your PDF. Please try again.",
+              );
+
+              // Reset button
+              const submitBtn = document.querySelector('button[type="submit"]');
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = originalBtnContent;
+            }
+          }
+        });
+
+      function prepareFormDataForSubmission() {
+        const form = document.getElementById("projectForm");
+        const formElements = form.elements;
+        const data = {};
+
+        // Get all regular inputs
+        for (let element of formElements) {
+          if (element.name && !element.name.includes("[]")) {
+            if (element.type === "checkbox") {
+              continue; // Skip checkboxes here, we'll handle them in the next loop
+            } else {
+              data[element.name] = element.value;
+            }
+          }
+        }
+
+        // Handle funcionality checkboxes separately to gather all checked values into an array
+        const functionalityCheckboxes = document.querySelectorAll(
+          'input[name="functionality[]"]:checked',
+        );
+        data.functionality = Array.from(functionalityCheckboxes).map(
+          (checkbox) => checkbox.value,
+        );
+
+        // Handle functionality "other" input
+        data.functionalityOther =
+          document.querySelector('textarea[name="functionalityOther"]')
+            ?.value || "";
+
+        // Handle repeater fields (inspiration examples)
+        const inspoUrls = document.querySelectorAll('input[name="inspoUrl[]"]');
+        const inspoNotes = document.querySelectorAll(
+          'input[name="inspoNotes[]"]',
+        );
+        data.inspiration = [];
+
+        inspoUrls.forEach((urlInput, indes) => {
+          const url = urlInput.value.trim();
+          const notes = inspoNotes[indes].value.trim() || "";
+          if (url) {
+            data.inspo.push({ url, notes });
+          }
+        });
+        return data;
+      }
+
+      function downloadPDF() {
+        if (window.generatedPDFBlob) {
+          // Create a Download Link
+          const url = window.URL.createObjectURL(window.generatedPDFBlob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = window.generatedPDFFilename || "ProjectSheet.pdf";
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+        } else {
+          alert(
+            "No PDF available for download. Please try generating the PDF again.",
+          );
+        }
+      }
+
+      function editForm() {
+        // Hide success screen
+        document.getElementById("successScreen").classList.remove("show");
+
+        // Reset to first section
+        currentSection = 0;
+
+        // Update sections display
+        updateSections();
+        updateProgress();
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function resetForm() {
+        if (
+          confirm(
+            "Are you sure? This will clear all your data and start fresh.",
+          )
+        ) {
+          localStorage.removeItem("wpProjectFormData");
+          formData = {};
+          document.getElementById("projectForm").reset();
+          document.getElementById("successScreen").classList.remove("show");
+          currentSection = 0;
+          updateSections();
+          updateProgress();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      }
+    </script>
+  </body>
+</html>
